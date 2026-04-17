@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Logs (generated at runtime)
+logs/
+*.log
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# AI tooling
+.claude/
+.wolf/
+
+# Misc
+.cache/
+dist/

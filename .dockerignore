@@ -1,0 +1,9 @@
+node_modules/
+logs/
+.claude/
+.wolf/
+.git/
+.gitignore
+*.log
+.env
+.env.*

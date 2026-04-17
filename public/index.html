@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UTC Time Converter — EST & CST</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="container">
+    <header class="hero">
+      <div class="hero-icon">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="18" stroke="url(#grad1)" stroke-width="2"/>
+          <path d="M20 10 L20 20 L28 24" stroke="url(#grad1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="6" y1="20" x2="2" y2="20" stroke="#818cf8" stroke-width="2" stroke-linecap="round"/>
+          <line x1="38" y1="20" x2="34" y2="20" stroke="#818cf8" stroke-width="2" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="grad1" x1="2" y1="2" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#818cf8"/>
+              <stop offset="100%" stop-color="#a78bfa"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <h1>UTC Time Converter</h1>
+      <p class="hero-sub">Convert any UTC timestamp to Eastern &amp; Central time with DST awareness</p>
+    </header>
+
+    <div class="card input-card">
+      <label class="input-label" for="utcInput">UTC Timestamp</label>
+      <div class="input-row">
+        <div class="input-wrap">
+          <textarea
+            id="utcInput"
+            class="time-input"
+            rows="2"
+            placeholder="Paste any UTC time here…"
+            spellcheck="false"
+            autocomplete="off"
+          ></textarea>
+          <button class="clear-btn" id="clearBtn" title="Clear input" aria-label="Clear">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <button class="convert-btn" id="convertBtn">
+          <span class="btn-text">Convert</span>
+          <span class="btn-spinner" hidden>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="rgba(255,255,255,0.3)" stroke-width="2"/><path d="M9 2a7 7 0 0 1 7 7" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+          </span>
+        </button>
+      </div>
+
+      <div class="format-chips">
+        <span class="chip-label">Accepted formats:</span>
+        <button class="chip" data-sample="2024-06-15T14:30:00Z">ISO 8601</button>
+        <button class="chip" data-sample="Sat, 15 Jun 2024 14:30:00 +0000">RFC 2822</button>
+        <button class="chip" data-sample="2024-06-15 14:30:00">SQL</button>
+        <button class="chip" data-sample="1718459400">Unix (s)</button>
+        <button class="chip" data-sample="1718459400000">Unix (ms)</button>
+        <button class="chip" data-sample="now">Now</button>
+      </div>
+
+      <div class="error-box" id="errorBox" hidden>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#f87171" stroke-width="1.5"/><path d="M8 5v3.5M8 11v.5" stroke="#f87171" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span id="errorMsg"></span>
+      </div>
+    </div>
+
+    <div id="results" class="results" hidden>
+      <div class="input-parsed-row">
+        <span class="parsed-label">Parsed UTC Input</span>
+        <span id="parsedUtc" class="parsed-value mono"></span>
+      </div>
+
+      <div class="zone-grid">
+        <!-- Eastern -->
+        <div class="zone-card" id="easternCard">
+          <div class="zone-header">
+            <div class="zone-icon eastern-icon">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5A7.5 7.5 0 1 1 1.5 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 5v4l2.5 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <div class="zone-name">Eastern Time</div>
+              <div class="zone-abbr" id="estAbbr">EST</div>
+            </div>
+            <div class="dst-badge" id="estDstBadge"></div>
+          </div>
+
+          <div class="zone-time" id="estTime12">--:--:-- --</div>
+          <div class="zone-date" id="estDate">---</div>
+          <div class="zone-offset" id="estOffset">---</div>
+          <div class="zone-dst-note" id="estDstNote"></div>
+
+          <button class="copy-btn" data-target="estTime12">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="4.5" y="4.5" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.4"/><path d="M3 8.5H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5a1 1 0 0 1 1 1v1.5" stroke="currentColor" stroke-width="1.4"/></svg>
+            Copy time
+          </button>
+        </div>
+
+        <!-- Central -->
+        <div class="zone-card" id="centralCard">
+          <div class="zone-header">
+            <div class="zone-icon central-icon">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.8"/><path d="M9 5v4l-2.5 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <div class="zone-name">Central Time</div>
+              <div class="zone-abbr" id="cstAbbr">CST</div>
+            </div>
+            <div class="dst-badge" id="cstDstBadge"></div>
+          </div>
+
+          <div class="zone-time" id="cstTime12">--:--:-- --</div>
+          <div class="zone-date" id="cstDate">---</div>
+          <div class="zone-offset" id="cstOffset">---</div>
+          <div class="zone-dst-note" id="cstDstNote"></div>
+
+          <button class="copy-btn" data-target="cstTime12">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="4.5" y="4.5" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.4"/><path d="M3 8.5H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5a1 1 0 0 1 1 1v1.5" stroke="currentColor" stroke-width="1.4"/></svg>
+            Copy time
+          </button>
+        </div>
+      </div>
+
+      <div class="dst-today-banner" id="dstTodayBanner">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" fill="currentColor"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.42 1.42M11.54 11.54l1.41 1.41M3.05 12.95l1.42-1.42M11.54 4.46l1.41-1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span id="dstTodayText"></span>
+      </div>
+    </div>
+
+    <div class="history-section" id="historySection" hidden>
+      <div class="history-header">
+        <span>Recent Conversions</span>
+        <button class="clear-history-btn" id="clearHistoryBtn">Clear</button>
+      </div>
+      <ul class="history-list" id="historyList"></ul>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>UTC Converter &mdash; Home Lab Edition</span>
+    <span class="footer-sep">|</span>
+    <a href="/health" target="_blank" class="health-link">Server Health</a>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
